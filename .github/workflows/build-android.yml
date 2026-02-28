@@ -31,8 +31,11 @@ jobs:
     - name: Install dependencies
       run: npm install
     
-    - name: Make gradlew executable
-      run: chmod +x android/gradlew
+    - name: Fix gradlew line endings and permissions
+      run: |
+        cd android
+        sed -i 's/\r$//' gradlew
+        chmod +x gradlew
     
     - name: Build Debug APK
       working-directory: android
