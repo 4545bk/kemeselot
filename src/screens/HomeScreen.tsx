@@ -7,7 +7,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
+  Alert,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Colors, Spacing, FontSize, BorderRadius, Shadows } from '../theme';
 import {
   getTodayPsalms,
@@ -18,6 +20,7 @@ import {
 import { useAppStore } from '../store/appStore';
 
 const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<any>();
   const todayReading = getTodayPsalms();
   const weeklySchedule = getWeeklySchedule();
   const ethDate = getTodayEthiopianDate();
@@ -109,7 +112,10 @@ const HomeScreen: React.FC = () => {
         </View>
 
         {/* Start Prayer Button */}
-        <TouchableOpacity style={styles.startButton} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.startButton}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('Settings')}>
           <Text style={styles.startButtonText}>☦ Begin Prayer Session</Text>
         </TouchableOpacity>
 
