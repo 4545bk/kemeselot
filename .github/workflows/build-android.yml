@@ -47,8 +47,7 @@ jobs:
         fi
     
     - name: Build Debug APK
-      working-directory: android
-      run: ./gradlew assembleDebug --no-daemon --stacktrace
+      run: npx react-native build-android --mode=debug
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
