@@ -16,8 +16,8 @@
     "@react-native-voice/voice": "^3.2.4",
     "react-native-track-player": "^4.1.1",
     "react-native-fast-image": "^8.6.3",
-    "react-native-screens": "^4.4.0",
-    "react-native-safe-area-context": "^5.0.0",
+    "react-native-screens": "latest",
+    "react-native-safe-area-context": "latest",
     "zustand": "^5.0.0"
   },
   "devDependencies": {

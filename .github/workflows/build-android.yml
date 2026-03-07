@@ -29,7 +29,9 @@ jobs:
       uses: android-actions/setup-android@v3
     
     - name: Install dependencies
-      run: npm install
+      run: |
+        rm -f package-lock.json
+        npm install
     
     - name: Fix gradlew line endings and permissions
       run: |
