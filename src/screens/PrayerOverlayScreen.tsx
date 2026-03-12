@@ -7,8 +7,9 @@ import {
     Animated,
     Dimensions,
     StatusBar,
+    Image,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
+
 import Voice, {
     SpeechResultsEvent,
     SpeechErrorEvent,
@@ -195,10 +196,10 @@ const PrayerOverlayScreen: React.FC = () => {
             <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
             {/* Wallpaper Background */}
-            <FastImage
+            <Image
                 style={styles.wallpaper}
-                source={{ uri: wallpaper.uri, priority: FastImage.priority.high }}
-                resizeMode={FastImage.resizeMode.cover}
+                source={{ uri: wallpaper.uri }}
+                resizeMode="cover"
             />
             {/* Dark overlay for legibility */}
             <View style={styles.darkOverlay} />
