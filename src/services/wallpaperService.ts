@@ -4,7 +4,7 @@
  * Fetches random "Ethiopian Spiritual" wallpapers from Cloudinary
  * to use as animated backgrounds on the prayer lock screen.
  *
- * Uses react-native-fast-image for smooth loading & caching.
+ * Uses React Native Image for loading & caching.
  */
 
 // ---------- Cloudinary Configuration ----------

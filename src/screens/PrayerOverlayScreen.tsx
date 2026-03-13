@@ -10,11 +10,8 @@ import {
     Image,
 } from 'react-native';
 
-import Voice, {
-    SpeechResultsEvent,
-    SpeechErrorEvent,
-} from '@react-native-voice/voice';
-import { State } from 'react-native-track-player';
+
+import { State } from '../services/audioService';
 import { Colors, Spacing, FontSize, BorderRadius, Shadows } from '../theme';
 import { getTodayPsalms, getRandomTodayPsalm } from '../services/mezmureService';
 import { dismissOverlay } from '../services/overlayService';
@@ -125,30 +122,20 @@ const PrayerOverlayScreen: React.FC = () => {
         };
     }, [startTimer]);
 
-    // ---------- Voice ----------
+    // ---------- Voice (Stubbed — native module removed) ----------
     const startVoice = async () => {
-        try {
-            await Voice.start('am-ET');
-            setIsListening(true);
-            setVoiceError(null);
-            Animated.loop(
-                Animated.sequence([
-                    Animated.timing(pulseAnim, { toValue: 1.15, duration: 600, useNativeDriver: true }),
-                    Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
-                ]),
-            ).start();
-        } catch {
-            try {
-                await Voice.start('en-US');
-                setIsListening(true);
-            } catch {
-                setVoiceError('Microphone unavailable');
-            }
-        }
+        console.log('[PrayerOverlay] Voice recognition stubbed out');
+        setIsListening(true);
+        setVoiceError(null);
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(pulseAnim, { toValue: 1.15, duration: 600, useNativeDriver: true }),
+                Animated.timing(pulseAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+            ]),
+        ).start();
     };
 
     const stopVoice = async () => {
-        try { await Voice.stop(); await Voice.destroy(); } catch { }
         setIsListening(false);
         speechActiveRef.current = false;
         setSpeechDetected(false);
@@ -156,17 +143,8 @@ const PrayerOverlayScreen: React.FC = () => {
     };
 
     useEffect(() => {
-        Voice.onSpeechStart = () => { speechActiveRef.current = true; setSpeechDetected(true); };
-        Voice.onSpeechEnd = () => {
-            speechActiveRef.current = false;
-            setSpeechDetected(false);
-            if (isListening && !completed) {
-                Voice.start('am-ET').catch(() => Voice.start('en-US').catch(() => { }));
-            }
-        };
-        Voice.onSpeechResults = (_e: SpeechResultsEvent) => { speechActiveRef.current = true; };
-        Voice.onSpeechError = (_e: SpeechErrorEvent) => { speechActiveRef.current = false; setSpeechDetected(false); };
-        return () => { Voice.destroy().then(Voice.removeAllListeners); };
+        // Voice event listeners removed (native module stripped)
+        return () => {};
     }, [isListening, completed]);
 
     useEffect(() => {

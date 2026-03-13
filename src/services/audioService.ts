@@ -1,187 +1,120 @@
 /**
- * Audio Service — Daily Ethiopian Orthodox Chant Streaming
+ * Audio Service — Stub (Track Player removed for clean build)
  *
- * Streams the daily Fikare (chant) based on the current day of week.
- * Source: ethiopianorthodox.org audio files.
- *
- * Uses react-native-track-player for audio playback.
+ * All functions are no-ops. Will be re-implemented once
+ * the base app is building successfully.
  */
 
-import TrackPlayer, {
-    Event,
-    State,
-    Track,
-    Capability,
-    AppKilledPlaybackBehavior,
-} from 'react-native-track-player';
+// Stub State enum to match track-player API
+export enum State {
+    None = 'none',
+    Playing = 'playing',
+    Paused = 'paused',
+    Stopped = 'stopped',
+}
 
-// ---------- Daily Chant URLs ----------
-// Each day maps to its specific Ethiopian Orthodox chant/Fikare
-// Hosted on ethiopianorthodox.org (fallback to publicly available sources)
+// Daily chant data (kept for UI display)
+export interface Track {
+    id: string;
+    url: string;
+    title: string;
+    artist: string;
+    album: string;
+    artwork: string;
+    duration: number;
+}
 
 const DAILY_CHANTS: Record<number, Track> = {
     0: {
-        // Sunday — Fikare Bealat (Festival)
         id: 'sunday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/sunday.mp3',
+        url: '',
         title: 'እሑድ — ፍካሬ ምስጢር',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
     1: {
-        // Monday — Fikare Tsega (Grace)
         id: 'monday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/monday.mp3',
+        url: '',
         title: 'ሰኞ — ፍካሬ ጸጋ',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
     2: {
-        // Tuesday — Fikare Gedam
         id: 'tuesday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/tuesday.mp3',
+        url: '',
         title: 'ማክሰኞ — ፍካሬ ገዳም',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
     3: {
-        // Wednesday — Fikare Medhanit
         id: 'wednesday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/wednesday.mp3',
+        url: '',
         title: 'ረቡዕ — ፍካሬ መድኃኒት',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
     4: {
-        // Thursday — Fikare Abat
         id: 'thursday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/thursday.mp3',
+        url: '',
         title: 'ሐሙስ — ፍካሬ አባት',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
     5: {
-        // Friday — Fikare Seqel (Cross)
         id: 'friday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/friday.mp3',
+        url: '',
         title: 'ዓርብ — ፍካሬ ስቅለት',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
     6: {
-        // Saturday — Fikare Mariam (Blessed Virgin)
         id: 'saturday',
-        url: 'https://www.ethiopianorthodox.org/amharic/holydays/audio/saturday.mp3',
+        url: '',
         title: 'ቅዳሜ — ፍካሬ ማርያም',
         artist: 'Ethiopian Orthodox Tewahedo Church',
         album: 'Daily Mezmur',
-        artwork: 'https://www.ethiopianorthodox.org/images/cross.jpg',
+        artwork: '',
         duration: 1800,
     },
 };
 
 let isSetup = false;
 
-// ---------- Setup ----------
-
 export async function setupAudioPlayer(): Promise<void> {
-    if (isSetup) return;
-
-    await TrackPlayer.setupPlayer({
-        maxCacheSize: 1024 * 5, // 5MB cache
-    });
-
-    await TrackPlayer.updateOptions({
-        capabilities: [
-            Capability.Play,
-            Capability.Pause,
-            Capability.Stop,
-        ],
-        compactCapabilities: [Capability.Play, Capability.Pause],
-        android: {
-            appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
-        },
-    });
-
     isSetup = true;
+    console.log('[AudioService] Stub: audio player setup skipped');
 }
 
-// ---------- Daily Chant ----------
-
-/**
- * Get today's chant track based on the current day.
- */
 export function getTodayChant(): Track {
     const dayOfWeek = new Date().getDay();
     return DAILY_CHANTS[dayOfWeek];
 }
 
-/**
- * Load and play today's Ethiopian Orthodox chant.
- */
 export async function playTodayChant(): Promise<void> {
-    await setupAudioPlayer();
-
-    const track = getTodayChant();
-
-    await TrackPlayer.reset();
-    await TrackPlayer.add([track]);
-    await TrackPlayer.play();
+    console.log('[AudioService] Stub: playback skipped');
 }
 
-/**
- * Pause the current chant.
- */
-export async function pauseChant(): Promise<void> {
-    await TrackPlayer.pause();
-}
+export async function pauseChant(): Promise<void> {}
+export async function resumeChant(): Promise<void> {}
+export async function stopChant(): Promise<void> {}
 
-/**
- * Resume playing.
- */
-export async function resumeChant(): Promise<void> {
-    await TrackPlayer.play();
-}
-
-/**
- * Stop and reset the player.
- */
-export async function stopChant(): Promise<void> {
-    await TrackPlayer.stop();
-    await TrackPlayer.reset();
-}
-
-/**
- * Get current playback state.
- */
 export async function getPlaybackState(): Promise<State> {
-    const { state } = await TrackPlayer.getPlaybackState();
-    return state;
+    return State.None;
 }
 
-/**
- * Toggle play/pause.
- */
-export async function togglePlayback(): Promise<void> {
-    const state = await getPlaybackState();
-    if (state === State.Playing) {
-        await pauseChant();
-    } else {
-        await resumeChant();
-    }
-}
+export async function togglePlayback(): Promise<void> {}
 
 export { DAILY_CHANTS };
 export default {
