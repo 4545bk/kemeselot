@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Colors, Spacing, FontSize, BorderRadius, Shadows } from '../theme';
 import {
-    canDrawOverlays,
+    hasOverlayPermission,
     hasUsageStatsPermission,
     requestOverlayPermission,
     requestUsageStatsPermission,
@@ -34,7 +34,7 @@ const PermissionsSetup: React.FC<Props> = ({ onAllGranted }) => {
     });
 
     const checkPermissions = async () => {
-        const overlay = await canDrawOverlays();
+        const overlay = await hasOverlayPermission();
         const usageStats = await hasUsageStatsPermission();
         const serviceRunning = await isServiceRunning();
         setStatus({ overlay, usageStats, serviceRunning });

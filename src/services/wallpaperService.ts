@@ -1,142 +1,244 @@
 /**
- * Wallpaper Service — Cloudinary Ethiopian Spiritual Imagery
+ * Wallpaper Service — Hybrid Local + Cloudinary
  *
- * Fetches random "Ethiopian Spiritual" wallpapers from Cloudinary
- * to use as animated backgrounds on the prayer lock screen.
- *
- * Uses React Native Image for loading & caching.
+ * 75% local bundled Ethiopian spiritual images (offline, instant)
+ * 25% Cloudinary remote images (new content, auto-cached)
+ * No Unsplash — completely removed.
  */
 
-// ---------- Cloudinary Configuration ----------
-// Replace with your own Cloudinary cloud name
-const CLOUDINARY_CLOUD_NAME = 'kemeselot';
-const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+import { NativeModules } from 'react-native';
+import { Asset } from 'expo-asset';
+import { useAppStore } from '../store/appStore';
+import { getRandomCloudinaryWallpaper } from './cloudinaryService';
 
-// Curated spiritual wallpaper public IDs from your Cloudinary account.
-// These are the asset IDs you'll upload to Cloudinary.
-// Format: 'folder/filename' (no extension needed)
-const SPIRITUAL_WALLPAPER_IDS = [
-    'kemeselot/lalibela_cross',
-    'kemeselot/bet_giyorgis',
-    'kemeselot/axum_obelisk',
-    'kemeselot/timkat_ceremony',
-    'kemeselot/debre_damo',
-    'kemeselot/meskel_square',
-    'kemeselot/ethiopian_icon_mary',
-    'kemeselot/abuna_yemata',
-    'kemeselot/tana_monastery',
-    'kemeselot/eth_orthodox_cross',
-];
+// ---------- Local Wallpaper Registry ----------
+function getLocalWallpapers() {
+    try {
+        return [
+            require('../../assets/wallpapers/photo_1_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_2_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_3_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_5_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_7_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_9_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_10_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_12_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_15_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_18_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_20_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_22_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_25_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_28_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_30_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_33_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_35_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_38_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_40_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_42_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_45_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_47_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_50_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_52_2026-03-17_14-35-50.jpg'),
+            require('../../assets/wallpapers/photo_54_2026-03-17_14-35-50.jpg'),
+        ];
+    } catch (e) {
+        console.error('[Wallpaper] Failed to load local wallpapers:', e);
+        return [];
+    }
+}
 
-// Fallback wallpapers using free Unsplash images (no API key needed)
-const FALLBACK_WALLPAPERS = [
-    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1080&q=80', // Mountains
-    'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=1080&q=80', // Night sky
-    'https://images.unsplash.com/photo-1476611338391-6f395a0dd82e?w=1080&q=80', // Sunrise
-    'https://images.unsplash.com/photo-1502209524164-acea936639a2?w=1080&q=80', // Candles
-    'https://images.unsplash.com/photo-1445307806294-bff7f67ff225?w=1080&q=80', // Ancient church
-    'https://images.unsplash.com/photo-1489980557514-251d61e3eeb6?w=1080&q=80', // Cross silhouette
+let _wallpapers: any[] | null = null;
+function getWallpapers(): any[] {
+    if (!_wallpapers) _wallpapers = getLocalWallpapers();
+    return _wallpapers;
+}
+
+// ---------- Psalm Verses ----------
+export const WALLPAPER_PSALMS = [
+    { geez: 'እግዚአብሔር ረዳዔ ወመድኃኒየ ፤', english: 'The Lord is my helper and my savior.' },
+    { geez: 'ፈቃደ እግዚአብሔር ይኩን ፤', english: 'Let the will of God be done.' },
+    { geez: 'እግዚአብሔር ጽድቅ ይፈቅድ ፤', english: 'The Lord loves righteousness.' },
+    { geez: 'ኃይልየ ወምስጋናየ እግዚአብሔር ፤', english: 'The Lord is my strength and my praise.' },
+    { geez: 'ተወከልኩ በእግዚአብሔር ፤', english: 'I trust in the Lord.' },
+    { geez: 'ሰማየ ይዜንው ስብሐተ እግዚአብሔር ፤', english: 'The heavens declare the glory of God.' },
+    { geez: 'ይቤ ሰነፍ በልቡ አልቦ አምላክ ፤', english: 'The fool says in his heart there is no God.' },
+    { geez: 'እግዚአብሔር ይጐብኘኒ ወኢይረኁ ፤', english: 'The Lord is my shepherd, I shall not want.' },
+    { geez: 'ኣምላኪየ ኣምላኪየ ለምንት ኃደግከኒ ፤', english: 'My God, my God, why have you forsaken me?' },
+    { geez: 'ለእግዚአብሔር ምድር ወሙላኤሃ ፤', english: 'The earth is the Lord\'s and everything in it.' },
+    { geez: 'አንሰ በዝኁለ ምሕረትከ ፤', english: 'But I trust in your unfailing love.' },
+    { geez: 'አቡጥ ኃጢኣትየ ፤', english: 'Wash away my sin.' },
+    { geez: 'ልበ ንጹሐ ፍጥር ሊተ ፤', english: 'Create in me a clean heart, O God.' },
+    { geez: 'አምላክ ሊተ ማዕቀፍ ፤', english: 'God is my refuge.' },
+    { geez: 'ወይጸውዕ ላዕሌየ ወአነ እሰምዖ ፤', english: 'He will call on me, and I will answer him.' },
+    { geez: 'ስብሕዎ ለእግዚአብሔር ፤', english: 'Praise the Lord!' },
+    { geez: 'በእንተ ቅዱስ ስምከ ፤', english: 'For the sake of your holy name.' },
+    { geez: 'መዝሙር ለዳዊት ፤', english: 'A Psalm of David.' },
+    { geez: 'ስብሐት ለአብ ወወልድ ወመንፈስ ቅዱስ ፤', english: 'Glory to the Father, Son, and Holy Spirit.' },
 ];
 
 // ---------- Types ----------
-
 export interface WallpaperInfo {
-    uri: string;
-    isCloudinary: boolean;
+    source: any;
     index: number;
+    psalmVerse: { geez: string; english: string };
 }
 
-// ---------- Cloudinary URL Builder ----------
+// ---------- Wallpaper Fetching (for prayer screen) ----------
 
-/**
- * Build a Cloudinary URL with transformations:
- * - Auto format (WebP on Android for performance)
- * - Quality auto
- * - Overlay effect: dark vignette for text legibility
- */
-export function buildCloudinaryUrl(
-    publicId: string,
-    options: {
-        width?: number;
-        height?: number;
-        quality?: number;
-        darkOverlay?: boolean;
-    } = {},
-): string {
-    const { width = 1080, height = 1920, quality = 80, darkOverlay = true } =
-        options;
-
-    const transforms = [
-        `w_${width}`,
-        `h_${height}`,
-        'c_fill',
-        `q_${quality}`,
-        'f_auto',
-        darkOverlay ? 'e_brightness:-20' : '',
-    ]
-        .filter(Boolean)
-        .join(',');
-
-    return `${CLOUDINARY_BASE_URL}/${transforms}/${publicId}`;
-}
-
-// ---------- Wallpaper Fetching ----------
-
-/**
- * Get a random spiritual wallpaper URL.
- * Tries Cloudinary first, falls back to Unsplash.
- */
 export function getRandomWallpaper(): WallpaperInfo {
-    const useCloudinary = Math.random() > 0.3; // 70% chance Cloudinary
+    const wallpapers = getWallpapers();
+    if (wallpapers.length === 0) {
+        return { source: null, index: 0, psalmVerse: WALLPAPER_PSALMS[0] };
+    }
+    const index = Math.floor(Math.random() * wallpapers.length);
+    const psalmIndex = Math.floor(Math.random() * WALLPAPER_PSALMS.length);
+    return { source: wallpapers[index], index, psalmVerse: WALLPAPER_PSALMS[psalmIndex] };
+}
 
-    if (useCloudinary && CLOUDINARY_WALLPAPER_IDS_VALID) {
-        const index = Math.floor(Math.random() * SPIRITUAL_WALLPAPER_IDS.length);
-        const publicId = SPIRITUAL_WALLPAPER_IDS[index];
-        return {
-            uri: buildCloudinaryUrl(publicId),
-            isCloudinary: true,
-            index,
-        };
+export function getTodayWallpaper(): WallpaperInfo {
+    const wallpapers = getWallpapers();
+    if (wallpapers.length === 0) {
+        return { source: null, index: 0, psalmVerse: WALLPAPER_PSALMS[0] };
+    }
+    const now = new Date();
+    const dayOfYear = Math.floor(
+        (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000,
+    );
+    const wallpaperIndex = dayOfYear % wallpapers.length;
+    const psalmIndex = dayOfYear % WALLPAPER_PSALMS.length;
+    return { source: wallpapers[wallpaperIndex], index: wallpaperIndex, psalmVerse: WALLPAPER_PSALMS[psalmIndex] };
+}
+
+export function getWallpaperCount(): number {
+    return getWallpapers().length;
+}
+
+// ---------- Phone Wallpaper Changing (75% local / 25% Cloudinary) ----------
+
+const MIN_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes minimum
+
+function pickNewIndex(count: number, lastIndex: number): number {
+    if (count <= 1) return 0;
+    let idx: number;
+    do {
+        idx = Math.floor(Math.random() * count);
+    } while (idx === lastIndex);
+    return idx;
+}
+
+async function applyLocalWallpaper(index: number): Promise<boolean> {
+    const { WallpaperModule } = NativeModules;
+    if (!WallpaperModule) throw new Error('WallpaperModule not found');
+
+    const wallpapers = getWallpapers();
+    if (index < 0 || index >= wallpapers.length) throw new Error('Invalid wallpaper index');
+
+    try {
+        // Use expo-asset to extract bundled image to a real file on disk
+        const asset = Asset.fromModule(wallpapers[index]);
+        await asset.downloadAsync();
+
+        if (!asset.localUri) {
+            throw new Error(`Asset ${index} has no localUri after download`);
+        }
+
+        await WallpaperModule.setWallpaper(asset.localUri);
+        console.log(`[Wallpaper] Applied local #${index} from ${asset.localUri}`);
+        return true;
+    } catch (error: any) {
+        console.error('[Wallpaper] Local failed:', error);
+        throw new Error(`Local dev error: ${error?.message || 'Unknown'}`);
+    }
+}
+
+async function applyWallpaperFromUri(uri: string): Promise<boolean> {
+    const { WallpaperModule } = NativeModules;
+    if (!WallpaperModule) throw new Error('WallpaperModule not found');
+
+    try {
+        await WallpaperModule.setWallpaper(uri);
+        console.log('[Wallpaper] Applied Cloudinary wallpaper');
+        return true;
+    } catch (error: any) {
+        console.error('[Wallpaper] Cloudinary failed:', error);
+        throw new Error(`Cloudinary uri error: ${error?.message || 'Unknown'}`);
+    }
+}
+
+/**
+ * 75% local, 25% Cloudinary. Falls back to local if Cloudinary fails.
+ */
+async function applyHybridWallpaper(store: any): Promise<boolean> {
+    const wallpapers = getWallpapers();
+    if (wallpapers.length === 0) throw new Error('No wallpapers available in registry');
+
+    let cloudinaryError = null;
+
+    // 25% chance → try Cloudinary
+    if (Math.random() < 0.25) {
+        try {
+            const cloudUri = await getRandomCloudinaryWallpaper();
+            if (cloudUri) {
+                const success = await applyWallpaperFromUri(cloudUri);
+                if (success) {
+                    store.setLastWallpaper(-99);
+                    return true;
+                }
+            } else {
+                cloudinaryError = 'No Cloudinary URI returned';
+            }
+        } catch (e: any) {
+            cloudinaryError = e?.message || 'Unknown Cloudinary error';
+        }
+        // Cloudinary failed — fall through to local
+        console.warn('[Wallpaper] Cloudinary failed, falling back to local. Error:', cloudinaryError);
     }
 
-    // Fallback to Unsplash
-    const index = Math.floor(Math.random() * FALLBACK_WALLPAPERS.length);
-    return {
-        uri: FALLBACK_WALLPAPERS[index],
-        isCloudinary: false,
-        index,
-    };
+    // 75% (or Cloudinary fallback) → local
+    const newIndex = pickNewIndex(wallpapers.length, store.lastWallpaperIndex);
+    
+    // This will throw if it fails, which bubbles up to forceChangeWallpaper -> Settings UI
+    const success = await applyLocalWallpaper(newIndex);
+    if (success) store.setLastWallpaper(newIndex);
+    return success;
 }
 
-/**
- * Get today's wallpaper (deterministic — same wallpaper all day).
- * Based on Ethiopian day-of-week so it changes daily.
- */
-export function getTodayWallpaper(): WallpaperInfo {
-    const dayOfWeek = new Date().getDay();
-    const fallbackIndex = dayOfWeek % FALLBACK_WALLPAPERS.length;
-    return {
-        uri: FALLBACK_WALLPAPERS[fallbackIndex],
-        isCloudinary: false,
-        index: fallbackIndex,
-    };
+/** Called from App.tsx on foreground — throttled */
+export async function changeWallpaperIfNeeded(): Promise<boolean> {
+    const store = useAppStore.getState();
+    if (!store.wallpaperEnabled) return false;
+
+    const elapsed = Date.now() - store.lastWallpaperChangedAt;
+    if (elapsed < MIN_INTERVAL_MS) return false;
+
+    const requiredInterval = store.wallpaperFrequency * MIN_INTERVAL_MS;
+    if (elapsed < requiredInterval) return false;
+
+    return await applyHybridWallpaper(store);
 }
 
-/**
- * Get a list of wallpapers to preload (for smooth transitions).
- */
-export function getWallpaperPreloadList(): string[] {
-    return FALLBACK_WALLPAPERS;
+/** Called after prayer completion — bypasses frequency, still throttled */
+export async function changeWallpaperOnPrayer(): Promise<boolean> {
+    const store = useAppStore.getState();
+    if (!store.wallpaperEnabled) return false;
+
+    if (Date.now() - store.lastWallpaperChangedAt < MIN_INTERVAL_MS) return false;
+
+    return await applyHybridWallpaper(store);
 }
 
-// Whether Cloudinary IDs are configured (non-placeholder)
-const CLOUDINARY_WALLPAPER_IDS_VALID = false; // Set to true after uploading to Cloudinary
+/** Called manually from Settings — bypasses ALL throttles */
+export async function forceChangeWallpaper(): Promise<boolean> {
+    const store = useAppStore.getState();
+    return await applyHybridWallpaper(store);
+}
 
 export default {
-    buildCloudinaryUrl,
     getRandomWallpaper,
     getTodayWallpaper,
-    getWallpaperPreloadList,
-    FALLBACK_WALLPAPERS,
-    SPIRITUAL_WALLPAPER_IDS,
+    getWallpaperCount,
+    changeWallpaperIfNeeded,
+    changeWallpaperOnPrayer,
+    forceChangeWallpaper,
+    WALLPAPER_PSALMS,
 };

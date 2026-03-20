@@ -1,10 +1,2 @@
-/**
- * @format
- */
-
-import { AppRegistry } from 'react-native';
-import App from './App';
-import { name as appName } from './app.json';
-
-// Main app entry point
-AppRegistry.registerComponent(appName, () => App);
+// index.js is no longer used — Expo uses App.tsx directly via AppEntry.js
+// This file is kept only as a placeholder.

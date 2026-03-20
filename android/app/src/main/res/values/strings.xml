@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Kemeselot</string>
+  <string name="app_name">Kemeselot</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="accessibility_service_label">Kemeselot Prayer Guard</string>
+  <string name="accessibility_service_description">This app uses the Accessibility Service to help users practice digital wellbeing by detecting when selected distracting apps are opened. When a blocked app is detected, a prayer screen is shown to encourage mindful activity before continuing. This service does not collect, store, or share any personal or sensitive user data. It only monitors which app is in the foreground to compare against the user\'s own chosen block list.</string>
 </resources>

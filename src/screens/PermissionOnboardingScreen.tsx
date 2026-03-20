@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Colors, Spacing, FontSize, BorderRadius, Shadows } from '../theme';
 import {
-    canDrawOverlays,
+    hasOverlayPermission,
     hasUsageStatsPermission,
     requestOverlayPermission,
     requestUsageStatsPermission,
@@ -28,7 +28,7 @@ const PermissionOnboardingScreen: React.FC = () => {
     const scaleAnim = React.useRef(new Animated.Value(0.9)).current;
 
     const checkPermissions = useCallback(async () => {
-        const overlay = await canDrawOverlays();
+        const overlay = await hasOverlayPermission();
         const usage = await hasUsageStatsPermission();
 
         setOverlayGranted(overlay);
@@ -74,7 +74,7 @@ const PermissionOnboardingScreen: React.FC = () => {
                         resizeMode="contain"
                     />
 
-                    <Text style={styles.title}>Welcome to ቀመሰሎት</Text>
+                    <Text style={styles.title}>Welcome to ከመ-ፀሎት</Text>
                     <Text style={styles.subtitle}>To protect your prayer time, we need two sacred permissions from your device.</Text>
 
                     <View style={styles.card}>
